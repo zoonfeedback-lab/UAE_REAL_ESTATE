@@ -67,7 +67,7 @@ export default function HomePage() {
                   </div>
                 </div>
                 {/* Search Button */}
-                <button className="bg-primary hover:bg-primary-hover text-white font-bold px-12 py-5 rounded-[1.5rem] transition-all shadow-xl shadow-primary/30 active:scale-95 whitespace-nowrap">
+                <button className="bg-primary hover:bg-primary-hover text-white font-bold px-12 py-5 rounded-[1.5rem] transition-all shadow-xl shadow-primary/30 active:scale-95 hover:scale-105 hover:shadow-primary/40 whitespace-nowrap cursor-pointer">
                   Search
                 </button>
               </div>
@@ -84,8 +84,8 @@ export default function HomePage() {
               { icon: "Mansions", label: "Mansions", svg: <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" /> },
               { icon: "Townhouses", label: "Townhouses", svg: <path d="M3 12h18M3 6h18M3 18h18" /> }
             ].map((cat, i) => (
-              <div key={i} className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all group flex flex-col items-center gap-4 cursor-pointer">
-                <div className="bg-primary/5 p-4 rounded-2xl group-hover:bg-primary group-hover:text-white transition-all text-primary">
+              <div key={i} className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group flex flex-col items-center gap-4 cursor-pointer">
+                <div className="bg-primary/5 p-4 rounded-2xl group-hover:bg-primary group-hover:text-white group-hover:rotate-12 transition-all duration-500 text-primary">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     {cat.svg}
                   </svg>
@@ -103,9 +103,17 @@ export default function HomePage() {
               <h2 className="text-4xl font-bold text-gray-900 mb-3 tracking-tight">Featured Listings</h2>
               <p className="text-gray-500 font-medium text-lg">Hand-picked premium properties for elite living.</p>
             </div>
-            <Link href="#" className="flex items-center gap-2 text-primary font-bold hover:gap-3 transition-all">
-              View All Properties
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <Link href="/properties" className="flex items-center gap-2 text-primary font-bold hover:gap-4 transition-all group">
+              <span>View All Properties</span>
+              <svg 
+                width="20" 
+                height="20" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2.5"
+                className="group-hover:translate-x-1 transition-transform"
+              >
                 <path d="M5 12h14M12 5l7 7-7 7" />
               </svg>
             </Link>
@@ -187,7 +195,7 @@ export default function HomePage() {
               <p className="text-xl text-white/70 mb-10 font-medium">
                 Join our network of elite sellers and reach thousands of high-intent buyers across the globe.
               </p>
-              <button className="bg-primary hover:bg-primary-hover text-white font-bold px-10 py-4 rounded-xl transition-all shadow-xl shadow-primary/40">
+              <button className="bg-primary hover:bg-primary-hover text-white font-bold px-10 py-4 rounded-xl transition-all shadow-xl shadow-primary/40 hover:scale-110 active:scale-95 hover:shadow-primary/60">
                 Get Started
               </button>
             </div>

@@ -1,10 +1,78 @@
+"use client";
+
+import { useState, useMemo } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FiltersSidebar from "@/components/FiltersSidebar";
 import PropertyCard from "@/components/PropertyCard";
 import Pagination from "@/components/Pagination";
+import { properties, Property } from "@/lib/data";
 
 export default function PropertiesPage() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState("Newest First");
+  const [filters, setFilters] = useState({
+    location: "",
+    types: [] as string[],
+    priceRange: [0, 20000000] as [number, number],
+    bedrooms: "Any",
+    minArea: "",
+    maxArea: "",
+  });
+
+  const [activeFilters, setActiveFilters] = useState(filters);
+
+  const filteredProperties = useMemo(() => {
+    return properties
+      .filter((p) => {
+        // Search query
+        const matchesSearch = p.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                             p.location.toLowerCase().includes(searchQuery.toLowerCase());
+        
+        // Types
+        const matchesType = activeFilters.types.length === 0 || activeFilters.types.includes(p.type);
+        
+        // Price
+        const matchesPrice = p.price >= activeFilters.priceRange[0] && p.price <= activeFilters.priceRange[1];
+        
+        // Bedrooms
+        let matchesBeds = true;
+        if (activeFilters.bedrooms !== "Any") {
+          const minBeds = parseInt(activeFilters.bedrooms);
+          matchesBeds = p.beds >= minBeds;
+        }
+
+        // Area
+        const minArea = activeFilters.minArea ? parseInt(activeFilters.minArea) : 0;
+        const maxArea = activeFilters.maxArea ? parseInt(activeFilters.maxArea) : Infinity;
+        const matchesArea = p.sqft >= minArea && p.sqft <= maxArea;
+
+        return matchesSearch && matchesType && matchesPrice && matchesBeds && matchesArea;
+      })
+      .sort((a, b) => {
+        if (sortBy === "Price: Low to High") return a.price - b.price;
+        if (sortBy === "Price: High to Low") return b.price - a.price;
+        return 0; // Default: Newest First (or no sort)
+      });
+  }, [searchQuery, sortBy, activeFilters]);
+
+  const handleApplyFilters = () => {
+    setActiveFilters(filters);
+  };
+
+  const handleResetFilters = () => {
+    const initialFilters = {
+      location: "",
+      types: [],
+      priceRange: [0, 20000000] as [number, number],
+      bedrooms: "Any",
+      minArea: "",
+      maxArea: "",
+    };
+    setFilters(initialFilters);
+    setActiveFilters(initialFilters);
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-[#FDFDFF]">
       <Navbar />
@@ -13,31 +81,37 @@ export default function PropertiesPage() {
         {/* Header Section */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 mb-12">
           <div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2 tracking-tight">Properties in New York</h1>
-            <p className="text-gray-500 font-medium">Showing 24 properties in New York, NY</p>
+            <h1 className="text-4xl font-bold text-gray-900 mb-2 tracking-tight">Properties</h1>
+            <p className="text-gray-500 font-medium">Showing {filteredProperties.length} properties</p>
           </div>
 
           <div className="flex items-center gap-4 w-full md:w-auto">
             {/* Search Input */}
-            <div className="relative flex-1 md:w-80">
-              <svg className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <div className="relative flex-1 md:w-80 group">
+              <svg className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors duration-300" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
               </svg>
               <input
                 type="text"
-                placeholder="Search by neighborhood..."
-                className="w-full pl-12 pr-4 py-4 rounded-2xl border border-gray-100 bg-white shadow-sm focus:outline-none focus:border-primary transition-all text-sm font-medium"
+                placeholder="Search properties..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-12 pr-4 py-4 rounded-2xl border border-gray-100 bg-white shadow-sm focus:outline-none focus:border-primary focus:shadow-lg focus:shadow-primary/5 transition-all text-sm font-medium hover:border-gray-200"
               />
             </div>
 
             {/* Sort Dropdown */}
-            <div className="relative w-48 hidden lg:block">
-              <select className="w-full px-6 py-4 rounded-2xl border border-gray-100 bg-white shadow-sm focus:outline-none focus:border-primary transition-all text-sm font-bold appearance-none cursor-pointer">
+            <div className="relative w-48 hidden lg:block group">
+              <select 
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="w-full px-6 py-4 rounded-2xl border border-gray-100 bg-white shadow-sm focus:outline-none focus:border-primary focus:shadow-lg focus:shadow-primary/5 transition-all text-sm font-bold appearance-none cursor-pointer hover:border-gray-200"
+              >
                 <option>Newest First</option>
                 <option>Price: Low to High</option>
                 <option>Price: High to Low</option>
               </select>
-              <svg className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+              <svg className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 group-hover:text-primary transition-colors pointer-events-none" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
                 <path d="m6 9 6 6 6-6" />
               </svg>
             </div>
@@ -47,59 +121,46 @@ export default function PropertiesPage() {
         {/* Main Layout Grid */}
         <div className="flex flex-col lg:flex-row gap-12">
           {/* Sidebar */}
-          <FiltersSidebar />
+          <FiltersSidebar 
+            filters={filters} 
+            setFilters={setFilters} 
+            onApply={handleApplyFilters} 
+            onReset={handleResetFilters} 
+          />
 
           {/* Results Grid */}
           <div className="flex-1">
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-8">
-              <PropertyCard
-                image="https://images.unsplash.com/photo-1613490493576-7fde63acd811?q=80&w=2071&auto=format&fit=crop"
-                title="Modern Glass Villa"
-                location="Upper East Side, NY"
-                price="$4,250,000"
-                beds={4}
-                baths={3}
-                sqft={3200}
-                badge="For Sale"
-                showButton
-              />
-              <PropertyCard
-                image="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2070&auto=format&fit=crop"
-                title="The Skyline Penthouse"
-                location="Tribeca, NY"
-                price="$8,900,000"
-                beds={5}
-                baths={4}
-                sqft={5400}
-                badge="New"
-                showButton
-              />
-              <PropertyCard
-                image="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?q=80&w=2070&auto=format&fit=crop"
-                title="Urban Oasis Townhouse"
-                location="Chelsea, NY"
-                price="$3,750,000"
-                beds={3}
-                baths={3}
-                sqft={2800}
-                badge="For Sale"
-                showButton
-              />
-              <PropertyCard
-                image="https://images.unsplash.com/photo-1600566753190-17f0bb2a6c3e?q=80&w=2070&auto=format&fit=crop"
-                title="Luxury Loft Suite"
-                location="SoHo, NY"
-                price="$2,100,000"
-                beds={2}
-                baths={2}
-                sqft={1800}
-                badge="New"
-                showButton
-              />
-            </div>
+            {filteredProperties.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-8">
+                {filteredProperties.map((property) => (
+                  <PropertyCard
+                    key={property.id}
+                    {...property}
+                    price={`$${property.price.toLocaleString()}`}
+                    showButton
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-20 bg-white rounded-[2rem] border border-dashed border-gray-200">
+                <div className="bg-gray-50 p-6 rounded-full mb-6">
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /><path d="M11 8v6" /><path d="M8 11h6" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">No properties found</h3>
+                <p className="text-gray-500 font-medium">Try adjusting your filters or search query.</p>
+                <button 
+                  onClick={handleResetFilters}
+                  className="mt-8 text-primary font-bold hover:underline"
+                >
+                  Clear all filters
+                </button>
+              </div>
+            )}
 
             {/* Pagination */}
-            <Pagination />
+            {filteredProperties.length > 0 && <Pagination />}
           </div>
         </div>
       </main>
