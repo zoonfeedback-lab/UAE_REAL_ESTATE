@@ -3,8 +3,18 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
+
 export default function Navbar() {
   const pathname = usePathname();
+  const { user, logout } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await logout();
+    router.push("/login");
+  };
 
   const navLinks = [
     { name: "Home", href: "/" },
@@ -52,8 +62,8 @@ export default function Navbar() {
                   href={link.href}
                   className={`relative text-sm px-4 py-2 rounded-full transition-all duration-300 group flex flex-col items-center gap-0.5 ${
                     isActive
-                      ? "text-primary font-bold bg-primary/5"
-                      : "text-gray-600 font-semibold hover:text-primary hover:bg-primary/5 active:scale-95"
+                       ? "text-primary font-bold bg-primary/5"
+                       : "text-gray-600 font-semibold hover:text-primary hover:bg-primary/5 active:scale-95"
                   }`}
                 >
                   <span>{link.name}</span>
@@ -69,15 +79,31 @@ export default function Navbar() {
 
           {/* Auth Buttons */}
           <div className="flex items-center gap-4">
-            <Link href="/login" className="text-sm font-bold text-gray-600 hover:text-primary transition-colors px-4 py-2">
-              Login
-            </Link>
-            <Link href="/register" className="bg-primary hover:bg-primary-hover text-white text-sm font-bold px-6 py-2.5 rounded-lg transition-all shadow-md shadow-primary/20">
-              Register
-            </Link>
+            {user ? (
+              <div className="flex items-center gap-4">
+                <span className="text-sm font-bold text-gray-700">Hi, {user.name.split(' ')[0]}</span>
+                <button 
+                  onClick={handleLogout}
+                  className="bg-red-600  hover:bg-red-700 text-white text-xs font-black px-6 py-2.5 rounded-xl transition-all uppercase tracking-widest shadow-lg shadow-red-200"
+                >
+                  Logout
+                </button>
+
+              </div>
+            ) : (
+              <>
+                <Link href="/login" className="text-sm font-bold text-gray-600 hover:text-primary transition-colors px-4 py-2">
+                  Login
+                </Link>
+                <Link href="/register" className="bg-primary hover:bg-primary-hover text-white text-sm font-bold px-6 py-2.5 rounded-lg transition-all shadow-md shadow-primary/20">
+                  Register
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>
     </nav>
   );
 }
+

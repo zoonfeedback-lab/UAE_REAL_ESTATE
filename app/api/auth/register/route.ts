@@ -11,7 +11,17 @@ export async function POST(request: NextRequest) {
   try {
     await connectDB();
 
+    // Safety Guard: Check for JWT_SECRET before any DB operations
+    if (!process.env.JWT_SECRET) {
+      console.error("JWT_SECRET is missing in environment variables");
+      return NextResponse.json(
+        { success: false, message: "Server configuration error" },
+        { status: 500 }
+      );
+    }
+
     const body = await request.json();
+
 
     if (!isRegisterBody(body)) {
       return NextResponse.json(
@@ -54,7 +64,9 @@ export async function POST(request: NextRequest) {
       email,
       password: hashedPassword,
       role: role || "buyer",
+
     });
+
 
     const token = jwt.sign(
       {
@@ -63,7 +75,7 @@ export async function POST(request: NextRequest) {
       },
       process.env.JWT_SECRET as string,
       {
-        expiresIn: "7d",
+        expiresIn: "1h",
       }
     );
 
@@ -88,8 +100,9 @@ export async function POST(request: NextRequest) {
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
-      maxAge: 7 * 24 * 60 * 60,
+      maxAge: 60 * 60, // 1 hour
     });
+
 
     return response;
   } catch (error) {

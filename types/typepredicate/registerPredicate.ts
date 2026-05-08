@@ -2,8 +2,9 @@ export interface RegisterBody {
   name: string;
   email: string;
   password: string;
-  role?: string;
+  role?: "admin" | "seller" | "buyer";
 }
+
 
 export function isRegisterBody(body: any): body is RegisterBody {
   if (body === null || typeof body !== "object") return false;
