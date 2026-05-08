@@ -45,14 +45,18 @@ export function proxy(request: NextRequest) {
   }
 
   // Logged in and trying to access login/register
+  /* NOTE: Temporarily disconnected dashboard redirection
   if (token && isAuthRoute) {
     return NextResponse.redirect(new URL(userDashboard, request.url));
   }
+  */
 
   // Logged in but trying to access a generic /dashboard or wrong role dashboard
+  /* NOTE: Temporarily disconnected dashboard redirection
   if (token && pathname === "/dashboard") {
     return NextResponse.redirect(new URL(userDashboard, request.url));
   }
+  */
 
   return NextResponse.next();
 }

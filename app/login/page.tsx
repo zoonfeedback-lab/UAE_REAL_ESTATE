@@ -25,6 +25,8 @@ export default function LoginPage() {
       const result = await login({ email, password });
       
       if (result.success && result.user) {
+        /* NOTE: Temporarily disconnecting the dashboard routing.
+           Users are redirected to the homepage for now.
         const role = result.user.role;
         const dashboardMap: Record<string, string> = {
           admin: "/dashboard/admindashboard",
@@ -35,6 +37,10 @@ export default function LoginPage() {
         const target = dashboardMap[role] || "/dashboard/buyerdashboard";
         router.refresh();
         router.push(target);
+        */
+        
+        router.refresh();
+        router.push("/");
 
       } else {
         setError(result.message || "Invalid email or password");
