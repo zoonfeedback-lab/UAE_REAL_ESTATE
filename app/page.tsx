@@ -20,6 +20,7 @@ export default function HomePage() {
               fill
               className="object-cover"
               priority
+              
             />
             <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px]"></div>
           </div>
@@ -77,6 +78,7 @@ export default function HomePage() {
 
         {/* Categories Section */}
         <section className="max-w-7xl mx-auto px-4 -mt-16 relative z-20">
+          {/* <h1>debugging here mat</h1> */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
               { icon: "Apartments", label: "Apartments", svg: <path d="M3 21h18M9 21V9a3 3 0 0 0-3-3H4a1 1 0 0 0-1 1v14M15 21V5a3 3 0 0 0-3-3h-2a1 1 0 0 0-1 1v16M21 21v-8a3 3 0 0 0-3-3h-2a1 1 0 0 0-1 1v10" /> },
