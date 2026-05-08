@@ -20,8 +20,8 @@ export default function Navbar() {
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
           <div className="flex items-center gap-2">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="bg-primary p-1.5 rounded-lg">
+            <Link href="/" className="flex items-center gap-2 group/logo">
+              <div className="bg-primary p-1.5 rounded-lg group-hover/logo:scale-110 group-hover/logo:rotate-3 transition-all duration-300">
                 <svg
                   width="20"
                   height="20"
@@ -43,20 +43,25 @@ export default function Navbar() {
           </div>
 
           {/* Navigation Links */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex items-center gap-2">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
               return (
                 <Link
                   key={link.name}
                   href={link.href}
-                  className={`text-sm transition-all duration-200 ${
+                  className={`relative text-sm px-4 py-2 rounded-full transition-all duration-300 group flex flex-col items-center gap-0.5 ${
                     isActive
-                      ? "font-bold text-primary"
-                      : "font-semibold text-gray-600 hover:text-primary"
+                      ? "text-primary font-bold bg-primary/5"
+                      : "text-gray-600 font-semibold hover:text-primary hover:bg-primary/5 active:scale-95"
                   }`}
                 >
-                  {link.name}
+                  <span>{link.name}</span>
+                  <span 
+                    className={`h-1 bg-primary rounded-full transition-all duration-300 ${
+                      isActive ? "w-1" : "w-0"
+                    }`}
+                  />
                 </Link>
               );
             })}
